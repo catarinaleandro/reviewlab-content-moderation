@@ -112,4 +112,4 @@ The product owner chose **needs context / escalate** for ambiguous sarcasm invol
 
 The source repository is intended to remain private while the project is refined. Vercel uses `vercel.json`: the dependency-free verification command is the build step and `dist` is the static output directory. Training is not run during deployment. Runtime scoring uses the included learned weights in the visitor's browser. There are no API keys or external inference costs.
 
-GitHub-to-Vercel automatic deployment depends on the Vercel GitHub integration having access to this private repository. Verify the linked repository and production branch before assuming pushes deploy automatically.
+The private repository `catarinaleandro/reviewlab-content-moderation` is connected to the existing Vercel project. Pushes to `main` run the verification build and automatically update [the public dashboard](https://reviewlab-content-moderation.vercel.app). Other branches use preview deployments. The Vercel GitHub app is limited to this repository. Check the deployment result and commit in Vercel before considering a change released.
