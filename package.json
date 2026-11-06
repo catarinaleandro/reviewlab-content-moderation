@@ -1,6 +1,6 @@
 {
   "name": "reviewlab-content-moderation",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "description": "Human review prioritisation with frozen benchmarks and transparent error analysis",
   "scripts": {
