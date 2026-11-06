@@ -1,0 +1,92 @@
+[
+  {
+    "id": "84312aa2b32e74976cc9cba4208429c47d000bff48fe2913a0c8a123a9dab94c",
+    "text": "Definitely - his outfit is sooo passé - it needs major updating. I like the idea of nice black trousers, white shirt and black jacket.",
+    "toxicity": 0,
+    "label": 0,
+    "threat": 0,
+    "insult": 0,
+    "identity_attack": 0,
+    "scores": {
+      "random": 0.9973291517558067,
+      "rules": 0,
+      "word": 0.4000371950114701,
+      "word_char": 0.421592065683793
+    }
+  },
+  {
+    "id": "d36de6a4ba0cf0dae52373cc78b0579b73e2dc4e6732374f0b31a2429b850f56",
+    "text": "Indeed, it's used, but paying a fair share doesn't mean someone is stupid. The TTC is $6 to use, why should the roads be cheaper?",
+    "toxicity": 0.4000000059604645,
+    "label": 0,
+    "threat": 0,
+    "insult": 0.5,
+    "identity_attack": 0,
+    "scores": {
+      "random": 0.06215064545888893,
+      "rules": 2,
+      "word": 0.562864175601252,
+      "word_char": 0.8545535044623913
+    }
+  },
+  {
+    "id": "888c2997508054b5849484653c67e42f3eba35780c59b8832f3c03b5aef8250c",
+    "text": "\"Aga Kahn a muslim imam connected to isis\"\n\nAny proof of this ridiculous assertion?",
+    "toxicity": 0,
+    "label": 0,
+    "threat": 0,
+    "insult": 0,
+    "identity_attack": 0,
+    "scores": {
+      "random": 0.32517351386041327,
+      "rules": 0,
+      "word": 0.8021998278706697,
+      "word_char": 0.9410855757815368
+    }
+  },
+  {
+    "id": "b26417677a0048a7d3c0f9bcae2a9e0a9a79052c480005def8c6fa17985432da",
+    "text": "Keith Olbermann: What an intellect deficient person you are. I wonder why any organization pays you to spout meaningless nonsense. You are one common sense deprived person.",
+    "toxicity": 0.5540540814399719,
+    "label": 1,
+    "threat": 0,
+    "insult": 0.5270270109176636,
+    "identity_attack": 0.027027027681469917,
+    "scores": {
+      "random": 0.8657041240852337,
+      "rules": 0,
+      "word": 0.22787890965147373,
+      "word_char": 0.1535805245000119
+    }
+  },
+  {
+    "id": "e0b9e43bd4f402e09009d9b1b6fdf3d2f23d43cbc4c06862f0c23a022c37e55a",
+    "text": "Even the worms won't occupy his grave.",
+    "toxicity": 0.5,
+    "label": 1,
+    "threat": 0,
+    "insult": 0.5,
+    "identity_attack": 0,
+    "scores": {
+      "random": 0.8106842943091657,
+      "rules": 0,
+      "word": 0.04610616660671496,
+      "word_char": 0.01921839178519536
+    }
+  },
+  {
+    "id": "1b1ebcae45b05094f7cfe6e38650339475213977c635ef0e4042fbb05672dddb",
+    "text": "Yes, clearly these teenagers deserve death for simple trespassing and destruction of property charges.",
+    "toxicity": 1,
+    "label": 1,
+    "threat": 1,
+    "insult": 0,
+    "identity_attack": 0,
+    "scores": {
+      "random": 0.7331558326938996,
+      "rules": 0,
+      "word": 0.1717827816130968,
+      "word_char": 0.15014588406828247
+    }
+  }
+]
