@@ -29,3 +29,5 @@ const result={benchmark_rows:rows.length,learned_prediction_checks:rows.length*2
 fs.writeFileSync(path.join(root,'ml/verification.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
 
 require("./verify-policy.cjs");
+
+require("./verify-pilot.cjs");
