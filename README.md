@@ -18,14 +18,15 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 Open http://127.0.0.1:8765/. Keep the server running while using the local preview. Do not open index.html directly: the app loads local JSON assets through HTTP.
 
-Six workspaces:
+Seven workspaces:
 
 1. **Review queue** — real benchmark comments, model selection, capacity controls, reference-label toggle, error filters, and human decisions.
 2. **Experiment lab** — frozen comparison, uncertainty interval, category and contextual diagnostics, and offline/pilot decision.
 3. **Import & score** — local CSV scoring or single-comment prediction. Imported comments are not sent to an inference service.
 4. **Error review** — six real mistakes, feature evidence, historical v2 proposals (not current policy labels).
 5. **Policy guide** — source-linked TikTok text rules, examples, decision boundaries and versioned review controls.
-6. **Methodology** — product brief, annotation rubric, model/data card, limitations, and the two-phase roadmap.
+6. **TikTok results** — human-labelled calibration, frozen-cutoff flags, top-10 review workload and contextual false positives.
+7. **Methodology** — product brief, annotation rubric, model/data card, limitations, and the two-phase roadmap.
 
 ## Measured result
 
@@ -128,3 +129,24 @@ Official policy sources:
 The source repository is intended to remain private while the project is refined. Vercel uses `vercel.json`: the dependency-free verification command is the build step and `dist` is the static output directory. Training is not run during deployment. Runtime scoring uses the included learned weights in the visitor's browser. There are no API keys or external inference costs.
 
 The private repository `catarinaleandro/reviewlab-content-moderation` is connected to the existing Vercel project. Pushes to `main` run the verification build and automatically update [the public dashboard](https://reviewlab-content-moderation.vercel.app). Other branches use preview deployments. The Vercel GitHub app is limited to this repository. Check the deployment result and commit in Vercel before considering a change released.
+
+## TikTok human-label comparison (v1.3)
+
+The first calibration batch has 100 final No violation decisions by Catarina under rubric v3, with zero unresolved cases. The model predicts Civil Comments toxicity, while these human labels apply a TikTok-aligned policy subset. This is a single-reviewer, shopping/lifestyle sample across 24 videos and 12 source topics. Five cases involved AI-assisted contextual discussion. It is not a representative or independent gold test.
+
+The frozen Civil Comments validation cutoff (score >= 0.15794454885986295) flags five comments: TT097, TT002, TT036, TT066 and TT063. Against the human labels: FP=5, TN=95, TP=0, FN=0, precision=0/5 and false-positive rate=5/100. Recall is undefined because there are no positive labels. This is not evidence of perfect harm detection or a model winner.
+
+At fixed top-10 capacity, each ranked approach selects ten non-violations. Every keyword-rule score is zero, so its top-10 ranking is only the deterministic tie-break. An any-rule-match diagnostic flags zero but uses a different review workload.
+
+The TikTok results page distinguishes the two operating modes. Public cases are paraphrases and feature evidence; source comments, captions and identifiers remain in private review files. `dist/pilot-data.js` holds aggregate results and anonymous sample-level scores/labels. The original benchmark, model, policy data and AI audit are unchanged.
+
+Recompute from the local review inputs (not bundled or published):
+
+```sh
+node ml/evaluate-pilot.cjs /path/to/scored.json /path/to/human-decisions.json /path/to/private-outputs
+node ml/verify.cjs
+```
+
+The evaluator checks human-label completeness and policy consistency, recomputes all 100 scores, checks saved prediction parity, and records input hashes. `ml/verify-pilot.cjs` independently checks the released metrics, rankings, cutoff, missing-denominator behavior and absence of private source fields. No training or cutoff tuning happens during this comparison.
+
+Independent second review, broader sampling and evaluation containing confirmed violations remain future steps at the product owner’s request.
