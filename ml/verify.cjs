@@ -31,3 +31,4 @@ fs.writeFileSync(path.join(root,'ml/verification.json'),JSON.stringify(result,nu
 require("./verify-policy.cjs");
 
 require("./verify-pilot.cjs");
+require("./verify-context-plan.cjs");
