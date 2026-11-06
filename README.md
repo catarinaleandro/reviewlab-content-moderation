@@ -18,13 +18,14 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 
 Open http://127.0.0.1:8765/. Keep the server running while using the local preview. Do not open index.html directly: the app loads local JSON assets through HTTP.
 
-Five workspaces:
+Six workspaces:
 
 1. **Review queue** — real benchmark comments, model selection, capacity controls, reference-label toggle, error filters, and human decisions.
 2. **Experiment lab** — frozen comparison, uncertainty interval, category and contextual diagnostics, and offline/pilot decision.
 3. **Import & score** — local CSV scoring or single-comment prediction. Imported comments are not sent to an inference service.
-4. **Error review** — six real mistakes, feature evidence, proposed policy decisions, and rubric v2.
-5. **Methodology** — product brief, annotation rubric, model/data card, limitations, and the two-phase roadmap.
+4. **Error review** — six real mistakes, feature evidence, historical v2 proposals (not current policy labels).
+5. **Policy guide** — source-linked TikTok text rules, examples, decision boundaries and versioned review controls.
+6. **Methodology** — product brief, annotation rubric, model/data card, limitations, and the two-phase roadmap.
 
 ## Measured result
 
@@ -102,11 +103,25 @@ The queue evaluates imported data only when all rows have labels. It never treat
 
 Civil Comments is released under CC0-1.0. The dataset contains offensive material. This prototype is independently developed, is not affiliated with TikTok, and does not claim TikTok performance.
 
-## Error review and rubric v2
+## TikTok-aligned rubric v3
 
-The Error review tab and [printable review](dist/rubric.html) analyse six purposively selected test errors. These are qualitative case studies, not an unbiased frequency estimate or new gold labels. Actual signed feature contributions are in `ml/error-review-evidence.json`; explanations and decisions are in `dist/data/error-review.json`. The model, reference labels, and frozen benchmark metrics have not changed.
+Guideline release: 25 August 2026. Effective: 24 September 2026. Verified directly on TikTok’s English (US) pages on 6 November 2026. This is a selected text-policy mapping, not a complete copy of TikTok policy or an official enforcement system.
 
-The product owner chose **needs context / escalate** for ambiguous sarcasm involving harm. Rubric v2 asks reviewers to identify the target, the author's stance, the harmful act, and missing context before deciding. It distinguishes neutral mentions and counterspeech from endorsed personal or identity-based attacks, and includes indirect insults without requiring profanity. New decisions carry `review-rubric-v2`; previously saved decisions retain their original version.
+The guide covers violence/harmful crime, hate, harassment, sexual harassment, privacy/doxing and self-harm promotion. It offers four actions: No violation in scope, Flag violation, Needs context, and Policy / specialist review. Lower-severity hostility is not automatically a removal violation; FYF restrictions, public-interest exceptions and adult public-figure context require a separate assessment. An urgent priority is a local record only and does not notify a safety service.
+
+`dist/policy.js` is the shared source for the guide, reviewer reason codes, validation and policy metadata. `dist/policy-view.js` renders the dashboard and [printable guide](dist/rubric.html). The examples are synthetic teaching examples. Raw TikTok sample comments are not republished. TT056 and TT083 summaries retain the product owner’s No violation decisions after AI-assisted discussion, not independent blind annotations.
+
+Each new decision records policy version, source URL, effective date, target context and priority. Flags and escalations require evidence notes, and reason/action mismatches are rejected. Editing a decision preserves earlier records; the CSV export distinguishes current and superseded rows. Old browser records are not silently relabelled.
+
+The six-case error audit in `dist/data/error-review.json` remains a historical v2 analysis. Its original proposed decisions must be explicitly re-reviewed under v3 before use as policy evaluation labels. The learned weights, Civil Comments labels, benchmark metrics and original audit are unchanged. The model estimates general toxicity; this update does not train or validate any new category detector.
+
+Official policy sources:
+- https://www.tiktok.com/safety/en/policies-and-engagement/safety-civility
+- https://www.tiktok.com/safety/en/policies-and-engagement/privacy-security
+- https://www.tiktok.com/safety/en/policies-and-engagement/mental-behavioral-health
+- https://www.tiktok.com/safety/en/policies-and-engagement/enforcement
+
+`node ml/verify.cjs` checks model parity, metrics and policy decision/history invariants. Repeat a policy-source review when TikTok changes its guidelines; the version and verification date are deliberately explicit.
 
 ## GitHub and Vercel
 
