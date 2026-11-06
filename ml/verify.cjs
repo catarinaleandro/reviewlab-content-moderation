@@ -27,3 +27,5 @@ for(const c of review.cases){
 assert.equal(review.benchmark_unchanged,true);assert.equal(review.rubric_version,'review-rubric-v2');
 const result={benchmark_rows:rows.length,learned_prediction_checks:rows.length*2,rules_checks:rows.length,max_absolute_prediction_error:max,metric_comparisons:12,csv_checks:'passed',unlabelled_metrics:'hidden',status:'passed'};
 fs.writeFileSync(path.join(root,'ml/verification.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));
+
+require("./verify-policy.cjs");
