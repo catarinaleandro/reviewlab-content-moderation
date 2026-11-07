@@ -37,7 +37,7 @@ function renderModels() {
       <div class="table-wrap"><table aria-label="Model comparison on validation and earlier pilot comments">
         <thead><tr><th scope="col">Model</th><th scope="col">Violations caught</th><th scope="col">False flags</th><th scope="col">First review slot</th><th scope="col">False flags on earlier pilot</th></tr></thead><tbody>${rows}</tbody></table></div>
       <p class="body-copy">The first review slot represents a 10% budget on these ten comments. The final column applies the same validation cutoffs to the earlier 100 harmless comments. C cleared all five original false positives and flagged four other comments.</p>
-      <div class="insight"><strong>Decision</strong> · Keep A in the live queue. Both validation violations concerned physical harm, and both helped determine the cutoffs. A fresh labelled batch is needed to assess detection across policy categories.</div>
+      <div class="insight"><strong>Decision</strong> · Keep A in the live queue. Both validation violations concerned physical harm, and both helped determine the cutoffs. Later blind tests are summarized below.</div>
     </section>
     <section class="panel panel-pad"><h2>How the live model handled the new batch</h2>
       <p class="body-copy">The 40 comments included 26 harmless comments, ten violations, two cases needing context and two for policy review. At the existing cutoff of ${base.live_cutoff.toFixed(3)}, A caught ${base.resolved.tp} of ten violations and flagged ${base.resolved.fp} harmless comments. Three unresolved cases also crossed that cutoff.</p>
@@ -50,8 +50,9 @@ function renderModels() {
       <details class="model-spec"><summary>Model and input settings</summary><div class="body-copy"><p>${esc(current.model)}. Input includes ${esc(current.input.toLowerCase())}.</p>
       ${current.id === 'A' ? '<p>The deployed cutoff was selected on the original Civil Comments validation set.</p>' : `<p>${esc(plan.training.framework)} · one epoch · seed 42 · batch size eight · ten pair-generation iterations. Both models started from the same BGE-small checkpoint.</p><p>Checkpoint revision <code>${esc(plan.base_model.revision)}</code>. The 512-token input preserves the comment and shortens context first.</p>`}</div></details>
     </section>
-    <section class="panel panel-pad"><h2>Next evaluation</h2><p class="body-copy">Freeze these models and cutoffs before labelling a fresh batch. Measure missed violations and false positives, then compare the queues at a 10% review budget on a naturally sampled set. The development goal is a 30% relative reduction in false positives while maintaining violation recall.</p>
-      <p class="body-copy">One reviewer supplied the labels after discussion. Four unresolved cases were excluded from binary training and validation. The earlier pilot serves as a check for recurring mistakes.</p>
+    <section class="panel panel-pad"><h2>What happened on fresh comments</h2>
+      <p class="body-copy">In the first blind batch of 40, C raised six alerts. Five were false positives. It caught the sole labelled violation, which ranked fifth in a group of 16 with two review slots. One comment needed more context.</p>
+      <p class="body-copy">A proposed rule gave one existing alert priority for possible physical harm. It improved the original replay. Across two subsequent 40-comment batches, the original and revised queues selected exactly the same cases at the fixed budgets. See the product decision, label limitations and proposed pilot criteria in the <a href="work-sample.html#evidence">case study</a>.</p>
       <div class="resource-links">${plan.sources.map(source => `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.title)} ↗</a>`).join('')}</div>
     </section>
     <div class="actions-row"><button id="download-model-results" class="button primary">Download comparison</button><button id="download-model-plan" class="button">Download original experiment plan</button><a href="#pilot" class="button">Earlier pilot results</a></div>`;
