@@ -70,6 +70,9 @@ I would start with **one English-language comment-review queue** and a narrow qu
 
 ## Explore the prototype
 
+- Download the one-page application work sample. [PDF summary](https://github.com/catarinaleandro/reviewlab-work-sample/blob/main/Catarina-Leandro-ReviewLab-Work-Sample.pdf)
+- Inspect the source, evaluation code and the published review outcomes for all five batches. [Public GitHub repository](https://github.com/catarinaleandro/reviewlab-work-sample) · [TikTok evaluation results](https://github.com/catarinaleandro/reviewlab-work-sample/blob/main/evaluation.json)
+
 - Adjust the review budget and inspect which cases enter the queue. [Review queue](https://reviewlab-content-moderation.vercel.app/#queue)
 - Compare the rules and text models at the same capacity. [Experiment lab](https://reviewlab-content-moderation.vercel.app/#experiments)
 - Inspect the policy boundaries, reviewer actions and examples. [Policy guide](https://reviewlab-content-moderation.vercel.app/#policy)
