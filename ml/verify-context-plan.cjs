@@ -11,4 +11,20 @@ assert.match(plan.base_model.revision,/^[a-f0-9]{40}$/);assert.equal(plan.base_m
 assert.equal(plan.evaluation.false_positive_reduction_goal,.3);assert.equal(plan.evaluation.target_recall,.9);
 const index=fs.readFileSync(path.join(root,'dist/index.html'),'utf8');
 for(const file of ['context-plan.js','model-choices.js'])assert.ok(index.includes(`src="${file}"`));
-console.log('Model-choice checks passed: A live; B/C untrained for policy; C recommended experiment; no claimed winner.');
+// The historical plan above remains the pre-training configuration.
+const run = require('../dist/context-results.js');
+assert.equal(run.live_model, 'A');
+assert.equal(run.batch.reviewed, ['N','V','U','P'].reduce((total, label) => total + run.batch[label], 0));
+assert.equal(run.train.V + run.validation.V, run.batch.V);
+assert.equal(run.train.N + run.validation.N, run.batch.N);
+assert.ok(index.includes('src="context-results.js"'));
+for (const arm of ['A','B','C']) {
+  const result = run.validation_comparison[arm];
+  const m = result.validation;
+  assert.equal(m.tp + m.fn, run.validation.V);
+  assert.equal(m.fp + m.tn, run.validation.N);
+  assert.equal(m.precision, m.tp / (m.tp + m.fp));
+  assert.equal(m.n, m.tp + m.fp + m.tn + m.fn);
+  assert.equal(result.review_slots, 1);
+}
+console.log('Original model plan and first policy-training comparison verified.');
