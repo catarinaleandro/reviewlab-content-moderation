@@ -27,9 +27,9 @@ Eight workspaces:
 5. **Policy guide** — source-linked TikTok text rules, examples, decision boundaries and versioned review controls.
 6. **TikTok results** — human-labelled calibration, frozen-cutoff flags, top-10 review workload and contextual false positives.
 7. **Methodology** — product brief, annotation rubric, model/data card, limitations, and the two-phase roadmap.
-8. **Model choices** — explicit A/B/C candidates, the recommended context experiment, exact training choices, data readiness and proposed evaluation gates. These are not challenger performance results.
+8. **Model choices** — A/B/C inputs, the first policy-trained comparison, earlier-pilot false flags and the frozen training plan.
 
-## Context model experiment — prepared, not policy-trained
+## First TikTok context-model experiment
 
 The current model overflags some literal or enthusiastic wording. This experiment makes the next choices explicit:
 
@@ -39,11 +39,19 @@ The current model overflags some literal or enthusiastic wording. This experimen
 | B | SetFit + `BAAI/bge-small-en-v1.5` + logistic-regression head | Comment | Learn the scoped policy labels with a sentence encoder |
 | C | The same checkpoint, training cohort and settings as B | Comment, caption, direct parent reply | Test whether context adds value; recommended experiment |
 
-C is a hypothesis, not a selected winner. A versus B changes both representation and training labels. B versus C isolates contextual input. If both meet the evidence requirements and C has no reliable advantage, prefer B for simplicity. Neither challenger has been trained on policy labels or evaluated on fresh moderation data.
+The 7 November 2026 experiment trained B and C on the same 26 comments (18 harmless, eight violations) and reserved ten for developer validation (eight harmless, two violations). Creator, video and similar-text groups stayed in one split. Four additional comments received context or policy-review labels and were excluded from binary fitting.
+
+| Model | Violations caught on validation | False flags on validation | First review slot | False flags on earlier 100 harmless comments |
+|---|---:|---:|---|---:|
+| A | 2/2 | 4/8 | Harmless | 5 |
+| B | 2/2 | 4/8 | Violation | 19 |
+| C | 2/2 | 1/8 | Violation | 4 |
+
+These results use cutoffs selected on those same ten validation rows to reach the planned 90% recall target. With only two violations, the cutoff had to include both. The earlier 100 comments were used for regression checks only. C cleared the five previous false positives and introduced four different false positives. Both validation positives concerned physical harm. Keep A as the live reference while new data is collected for a locked test. The dashboard serves aggregate metrics from `dist/context-results.js`. Candidate weights and raw annotation records stay local.
 
 `ml/context-experiment.json` is the owning configuration. B and C use the pinned BGE revision `5c38ec7c405ec4b44b94cc5a9bb96e735b38267a`, SetFit 1.1.3, seed 42, batch size 8, one epoch, ten pair-generation iterations and a logistic-regression head with C=1. The encoder supports English and a 512-token input. Complete comments are preserved; context is shortened first, and overly long comments are rejected for manual handling. The classifier produces a binary review score, not validated category detection or generated evidence.
 
-The software was exercised end to end on an unrelated invented gardening-versus-music fixture. Both arms trained and returned finite predictions. That check verifies the pipeline only. Its weights and scores are not moderation candidates and are not deployed. Twelve contract tests cover label provenance, cross-split leakage, context truncation and metrics. The current 100 TikTok labels are all No violation; confirmed violations and fresh contextual examples are still required.
+The software was exercised end to end on an unrelated invented gardening-versus-music fixture. Both arms trained and returned finite predictions. That check verifies the pipeline only. Its weights and scores are not moderation candidates and are not deployed. Twelve contract tests cover label provenance, cross-split leakage, context truncation and metrics. The original 100-comment pilot consisted entirely of No violation labels. The subsequent 40-comment development batch supplied mixed policy labels.
 
 ```sh
 python3 -m venv .venv-context
@@ -52,13 +60,13 @@ python3 -m venv .venv-context
 python3 ml/verify-context.py
 # Software execution check only; use a new output directory for each run.
 .venv-context/bin/python ml/context_train.py --base context-base --cache context-cache --output context-runs/smoke-01 --smoke
-# Real policy training, once confirmed data is available:
+# Train on human-confirmed policy labels:
 .venv-context/bin/python ml/context_train.py --data labelled-development.json --base context-base --cache context-cache --output context-runs/policy-01
 ```
 
 The training input is an object containing a `rows` array. Each row needs `id`, `comment`, nullable `caption` and `parent`, `group_id`, `family_id`, `split`, `human_decision`, `reviewer`, `label_status`, `policy_version` and `source_kind`. Labels must be `human_confirmed` under the current policy. `train` and `validation` accept real examples only; constructed examples belong to `regression`. Unresolved decisions are excluded from binary fitting. The minimum class counts are software checks, not sample-size adequacy claims. Family IDs must come from an upstream near-duplicate audit; this validator checks their split consistency but does not discover fuzzy duplicates.
 
-Keep locked test data in a separate file: the training command rejects test rows. It fits both arms, saves independent weights, selects each threshold on validation at the provisional 90% recall target and records validation results. It does not score locked test data, declare a winner, generate final confidence intervals or deploy a model. Final comparison remains pending labels and sufficient evaluation data. Evaluate false-positive reduction and achieved recall on fresh data, plus a separate capacity comparison on a natural-prevalence sample. The proposed 30% false-positive reduction is a target, not an observed improvement or deployment guarantee.
+Keep locked test data in a separate file: the training command rejects test rows. It fits both arms, saves independent weights, selects each threshold on validation at the provisional 90% recall target and records validation results. It does not score locked test data, declare a winner, generate final confidence intervals or deploy a model. The first development comparison is complete. A final comparison requires a fresh labelled test set. Evaluate false-positive reduction and achieved recall on fresh data, plus a separate capacity comparison on a natural-prevalence sample. The proposed 30% false-positive reduction is a target, not an observed improvement or deployment guarantee.
 
 The public page is generated from the same configuration and checked for consistency during the existing build. The Vercel dashboard remains a static app; candidate training runs offline and requires no public inference endpoint or API key.
 
