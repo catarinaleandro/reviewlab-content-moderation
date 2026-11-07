@@ -1,15 +1,66 @@
 'use strict';
-let inspectedModel='C';
-function renderModels(){
-  const p=ReviewModelPlan,c=p.arms.find(x=>x.id===inspectedModel);
-  $('#content').innerHTML=hero('PHASE 1 · CONTROLLED MODEL EXPERIMENT','Three choices. One clear comparison.','C is our preferred experiment. A remains the live reference. No challenger has won yet.','Candidate design')+
-    `<section class="panel panel-pad model-status"><div><div class="eyebrow">CURRENT STATE</div><h2>Ready to prepare the training data.</h2><p class="body-copy">${esc(p.status)}. Your 100 confirmed pilot labels are all No violation. We need confirmed violations and fresh contextual examples before measuring improvement.</p></div><a class="button soft" href="#pilot">See the pilot evidence →</a></section>
-    <div class="model-cards">${p.arms.map(a=>`<article class="panel panel-pad model-card ${a.id==='C'?'recommended':''}"><div class="panel-head"><span class="model-letter">${a.id}</span><span class="badge-neutral">${a.id==='C'?'Recommended experiment':a.id==='A'?'Live reference':'Simpler challenger'}</span></div><h2>${esc(a.name)}</h2><p class="model-model">${esc(a.model)}</p><dl><dt>What it sees</dt><dd>${esc(a.input)}</dd><dt>What it learns</dt><dd>${esc(a.learns)}</dd><dt>Why include it</dt><dd>${esc(a.role)}</dd></dl><button class="button ${a.id===inspectedModel?'primary':''} inspect-model" data-model="${a.id}" aria-pressed="${a.id===inspectedModel}">Inspect ${a.id} · ${esc(a.name)}</button></article>`).join('')}</div>
-    <section class="panel panel-pad model-details" aria-live="polite"><div class="eyebrow">VIEWING CONFIGURATION ${c.id} · DOES NOT CHANGE THE LIVE MODEL</div><h2>${esc(c.name)}: the tradeoff</h2><p class="body-copy">${esc(c.tradeoff)}.</p><div class="insight"><strong>Evidence status:</strong> ${esc(c.evidence)}.</div><div class="model-fields"><div><span class="eyebrow">COMMENT</span><p>“Yes, do that.”</p></div>${c.id==='C'?'<div><span class="eyebrow">DIRECT PARENT REPLY</span><p>Was the person suggesting freezing rice—or hurting a neighbor? C receives the actual parent text when available.</p></div><div><span class="eyebrow">VIDEO CAPTION</span><p>Additional context, attributed separately. Missing context is marked explicitly.</p></div>':'<div><span class="eyebrow">CONTEXT</span><p>This candidate does not receive the caption or parent reply.</p></div>'}</div><p class="help-text">This is an input illustration, not a prediction from a trained challenger. B and C scores remain unavailable until training and evaluation.</p></section>
-    <div class="section-grid"><section class="panel panel-pad"><div class="eyebrow">HOW WE WILL CHOOSE</div><h2>Test the value of context directly.</h2><div class="body-copy">${p.comparison_logic.map(t=>`<p>${esc(t)}</p>`).join('')}</div></section><section class="panel panel-pad"><div class="eyebrow">EXACT MODEL CHOICE</div><h2>SetFit + BGE-small-en-v1.5</h2><div class="body-copy"><p><strong>BGE</strong> starts with a pretrained representation of English sentences. <strong>SetFit</strong> adapts that representation to our labelled examples. A <strong>logistic-regression head</strong> produces the review score.</p><p>Both challengers use the same model version, data, seed and training settings. C receives additional context. Neither starts with validated knowledge of our policy.</p></div><details class="model-spec"><summary>Reproducible configuration</summary><div class="body-copy"><p>Checkpoint: ${esc(p.base_model.id)}<br>Revision: <code>${esc(p.base_model.revision)}</code></p><p>English · MIT licence · maximum ${p.base_model.max_tokens} tokens.<br>${esc(p.training.framework)} · seed ${p.training.seed} · batch size ${p.training.batch_size} · ${p.training.num_epochs} epoch · ${p.training.num_iterations} pair-generation iterations.<br>${esc(p.training.head)}.</p></div></details></section></div>
-    <section class="panel panel-pad model-gates"><div class="eyebrow">PROPOSED SUCCESS CRITERIA · NOT MEASURED RESULTS</div><h2>Fewer false alarms, with detection checked.</h2><div class="model-gate-grid"><div><strong>30%</strong><p>Target relative reduction in false positives on fresh data.</p></div><div><strong>90%</strong><p>Provisional validation recall target for selecting score cutoffs.</p></div><div><strong>10%</strong><p>Separate capacity comparison on a natural-prevalence sample.</p></div></div><p class="body-copy">${esc(p.evaluation.primary)}</p><div class="body-copy"><ul>${p.evaluation.gates.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div><div class="insight">All human referrals count toward workload, including uncertainty and urgent cases. These experimental targets are not a production safety standard.</div></section>
-    <div class="section-grid"><section class="panel panel-pad"><div class="eyebrow">DATA WE HAVE · DATA WE NEED</div><h2>The label gap is explicit.</h2><div class="body-copy"><p><strong>100 No violation · 0 Violation</strong> in the current pilot. These examples help diagnose and catch regressions; after inspecting them, they cannot be an untouched test.</p><p><strong>20 constructed exercises</strong> explore threats, literal language, quotations and missing context. Their proposed labels have not been confirmed; they are separate from real-data evaluation.</p><p><strong>Next:</strong> confirm mixed policy labels with context. Group conversations and similar examples before assigning training, validation and a locked final test. Keep naturally sampled data separate from an enriched challenge set.</p></div></section><section class="panel panel-pad"><div class="eyebrow">WHAT THE CLASSIFIER DOES</div><h2>Score for review. Keep judgment human.</h2><div class="body-copy"><p>${esc(p.workflow.model_output)}.</p><p>${esc(p.workflow.limits)}</p><p>${esc(p.workflow.deployment)}</p></div></section></div>
-    <section class="panel panel-pad"><div class="eyebrow">INPUT DESIGN</div><h2>Context needs boundaries.</h2><div class="body-copy"><ul>${p.input_rules.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></div><div class="resource-links">${p.sources.map(s=>`<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)} ↗</a>`).join('')}</div></section><div class="actions-row"><button id="download-model-plan" class="button primary">Download the model choices ↓</button><a href="#policy" class="button">Review the labelling rubric →</a></div>`;
-  $$('.inspect-model').forEach(b=>b.onclick=()=>{inspectedModel=b.dataset.model;renderModels();});
-  $('#download-model-plan').onclick=()=>download('reviewlab-context-model-choices.json',JSON.stringify(p,null,2),'application/json');
+
+let inspectedModel = 'C';
+
+function renderModels() {
+  const plan = ReviewModelPlan;
+  const run = ReviewContextRun;
+  const comparison = run.validation_comparison;
+  const current = plan.arms.find(arm => arm.id === inspectedModel);
+  const currentResult = comparison[current.id];
+  const base = run.baseline_on_40;
+  const cases = {
+    A: 'At the live cutoff, the model missed a reply attacking someone’s face and a comment targeting religion and national origin.',
+    B: 'The sewing-machine comment crossed the review cutoff. A comment quoting an insult directed at its author also crossed the cutoff.',
+    C: 'The sewing-machine comment fell below the review cutoff when the model had the caption. The comment quoting an insult directed at its author still crossed the cutoff.'
+  };
+  const names = {A: 'Current baseline', B: 'Comment only', C: 'Comment with context'};
+  const cards = plan.arms.map(arm => `
+    <article class="panel panel-pad model-card">
+      <div class="panel-head"><span class="model-letter">${arm.id}</span><span class="badge-neutral">${arm.id === 'A' ? 'Live reference' : 'Trained offline'}</span></div>
+      <h2>${names[arm.id]}</h2><p class="model-model">${esc(arm.model)}</p>
+      <dl><dt>Input</dt><dd>${esc(arm.input)}</dd><dt>Training labels</dt><dd>${arm.id === 'A' ? 'Civil Comments toxicity' : 'Human-reviewed TikTok policy labels'}</dd></dl>
+      <button class="button ${arm.id === inspectedModel ? 'primary' : ''} inspect-model" data-model="${arm.id}" aria-pressed="${arm.id === inspectedModel}">Inspect ${arm.id} · ${names[arm.id]}</button>
+    </article>`).join('');
+  const rows = plan.arms.map(arm => {
+    const result = comparison[arm.id];
+    return `<tr><th scope="row">${arm.id} · ${names[arm.id]}</th>
+      <td>${result.validation.tp} / 2</td><td>${result.validation.fp} / 8</td>
+      <td>${result.first_review_label === 'V' ? 'Violation' : 'Harmless'}</td>
+      <td>${result.prior_100_false_flags_at_validation_cutoff} / 100</td></tr>`;
+  }).join('');
+  $('#content').innerHTML = hero('TIKTOK MODEL EXPERIMENT', 'Does context improve review?',
+    'On ten validation comments, adding the caption and parent reply reduced false flags from four to one. Both models caught the two labelled violations.') + `
+    <section class="panel panel-pad">
+      <h2>Model comparison</h2>
+      <p class="body-copy">We trained B and C on the same 26 comments, including eight violations. We reserved ten comments from different creators for validation. For each model, we chose the highest cutoff that caught both validation violations.</p>
+      <div class="table-wrap"><table aria-label="Model comparison on validation and earlier pilot comments">
+        <thead><tr><th scope="col">Model</th><th scope="col">Violations caught</th><th scope="col">False flags</th><th scope="col">First review slot</th><th scope="col">False flags on earlier pilot</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <p class="body-copy">The first review slot represents a 10% budget on these ten comments. The final column applies the same validation cutoffs to the earlier 100 harmless comments. C cleared all five original false positives and flagged four other comments.</p>
+      <div class="insight"><strong>Decision</strong> · Keep A in the live queue. Both validation violations concerned physical harm, and both helped determine the cutoffs. A fresh labelled batch is needed to assess detection across policy categories.</div>
+    </section>
+    <section class="panel panel-pad"><h2>How the live model handled the new batch</h2>
+      <p class="body-copy">The 40 comments included 26 harmless comments, ten violations, two cases needing context and two for policy review. At the existing cutoff of ${base.live_cutoff.toFixed(3)}, A caught ${base.resolved.tp} of ten violations and flagged ${base.resolved.fp} harmless comments. Three unresolved cases also crossed that cutoff.</p>
+      <p class="body-copy">With four review slots, A selected three harmless comments and one policy-review case. Keyword rules selected two harmless comments and two policy-review cases. We deliberately sampled challenging language, so these counts describe this batch.</p>
+    </section>
+    <div class="model-cards">${cards}</div>
+    <section class="panel panel-pad model-details" aria-live="polite">
+      <h2>${current.id} · ${names[current.id]}</h2><p class="body-copy">${cases[current.id]}</p>
+      <p class="body-copy">Validation cutoff ${currentResult.validation_cutoff.toFixed(3)}. Precision was ${currentResult.validation.tp} of ${currentResult.validation.tp + currentResult.validation.fp} flagged comments. The first review slot caught ${currentResult.top1_violations_caught} of two violations.</p>
+      <details class="model-spec"><summary>Model and input settings</summary><div class="body-copy"><p>${esc(current.model)}. Input includes ${esc(current.input.toLowerCase())}.</p>
+      ${current.id === 'A' ? '<p>The deployed cutoff was selected on the original Civil Comments validation set.</p>' : `<p>${esc(plan.training.framework)} · one epoch · seed 42 · batch size eight · ten pair-generation iterations. Both models started from the same BGE-small checkpoint.</p><p>Checkpoint revision <code>${esc(plan.base_model.revision)}</code>. The 512-token input preserves the comment and shortens context first.</p>`}</div></details>
+    </section>
+    <section class="panel panel-pad"><h2>Next evaluation</h2><p class="body-copy">Freeze these models and cutoffs before labelling a fresh batch. Measure missed violations and false positives, then compare the queues at a 10% review budget on a naturally sampled set. The development goal is a 30% relative reduction in false positives while maintaining violation recall.</p>
+      <p class="body-copy">One reviewer supplied the labels after discussion. Four unresolved cases were excluded from binary training and validation. The earlier pilot serves as a check for recurring mistakes.</p>
+      <div class="resource-links">${plan.sources.map(source => `<a href="${esc(source.url)}" target="_blank" rel="noopener">${esc(source.title)} ↗</a>`).join('')}</div>
+    </section>
+    <div class="actions-row"><button id="download-model-results" class="button primary">Download comparison</button><button id="download-model-plan" class="button">Download original experiment plan</button><a href="#pilot" class="button">Earlier pilot results</a></div>`;
+  $$('.inspect-model').forEach(button => {
+    button.onclick = () => {
+      inspectedModel = button.dataset.model;
+      renderModels();
+    };
+  });
+  $('#download-model-results').onclick = () => download('reviewlab-context-results.json', JSON.stringify(run, null, 2), 'application/json');
+  $('#download-model-plan').onclick = () => download('reviewlab-original-context-plan.json', JSON.stringify(plan, null, 2), 'application/json');
 }
