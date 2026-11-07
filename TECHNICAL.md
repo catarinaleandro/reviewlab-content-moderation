@@ -2,6 +2,19 @@
 
 [Product case study and roadmap](README.md) · [Public case study](https://reviewlab-content-moderation.vercel.app/work-sample.html)
 
+## Follow a comment through the code
+
+| If you want to understand… | Start here | What to follow |
+|---|---|---|
+| How the demo scores a comment | [Benchmark training](ml/train.py) → [browser scoring](dist/engine.js) → [review queue](dist/app.js) | Training exports the vocabulary, word weights and coefficients. In the browser, `createEngine` applies them to text, `rank` sorts the scores and `summarize` counts outcomes within the selected budget. |
+| What changes between B and C | [Context training](ml/context_train.py) | `validate_rows` checks the groups and labels. `serialize` builds the two inputs. `threshold_for_recall` chooses a cutoff from validation scores. The trainer is preserved byte-for-byte because the blind-test protocol records its fingerprint. |
+| How a flag becomes a human decision | [Policy rules](dist/policy.js) → [review queue](dist/app.js) | `validateDecision` checks the reviewer's reason and evidence. `buildDecision` preserves earlier decisions. The model score and benchmark reference label stay separate. |
+| How the one-slot comparison works | [Offline queue rule](ml/queue_order.py) | Give `order` already-scored rows with unique `id`, `text` and `score`, plus the frozen cutoff. It returns the original order, candidate order and eligible comment ID (or `None`). Take the first K rows from each for the same K. |
+| Which results the dashboard displays | [Original plan](ml/context-experiment.json) → [development results](dist/context-results.js) → [model comparison](dist/model-choices.js) | The plan records what was known before training. The results contain measured development counts. Later blind-test outcomes and the provisional success criteria appear in the [case study](README.md). |
+| How to verify the export | [Build checks](ml/verify.cjs) and [context checks](ml/verify-context.py) | Run `node ml/verify.cjs` and `python3 ml/verify-context.py` from the repository root. The first checks scoring parity, capacity metrics, policy workflow and published aggregates. The second checks the B/C input and evaluation contract. |
+
+The ranking rule runs offline. Eligible alerts must match a narrow English wording pattern and already meet C’s cutoff. Only the highest-scoring eligible alert can move. All other comments keep their relative order. An eligible item already ranked first produces the same queue. A comment below the cutoff keeps its original place.
+
 ## Run the prototype
 
 No build tools, API keys, inference service, or installation are needed to preview the exported model.
@@ -11,6 +24,8 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist
 ```
 
 Open http://127.0.0.1:8765/. Keep the server running while using the local preview. Do not open index.html directly: the app loads local JSON assets through HTTP.
+
+To edit the public case study, update the root README. Run `npm ci` and then `npm run case-study` to regenerate `dist/work-sample.html` with the [page renderer](render-case.mjs). Commit the README and generated page together. The public deployment serves the checked-in page.
 
 Eight workspaces:
 
